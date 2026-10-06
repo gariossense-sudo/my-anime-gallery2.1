@@ -147,9 +147,9 @@ document.getElementById("photoForm").addEventListener("submit", async event => {
 
   const file = document.getElementById("photoFile").files?.[0];
   const category = document.getElementById("category").value;
-  const name = document.getElementById("name").value.trim();
-  const age = document.getElementById("age").value.trim() || "-";
-  const note = document.getElementById("note").value.trim();
+  const Name = document.getElementById("name").value.trim();
+  const Age = document.getElementById("age").value.trim() || "-";
+  const Note = document.getElementById("note").value.trim();
   const adminPassword = document.getElementById("adminPassword").value;
   const submitButton = event.submitter;
 
@@ -194,9 +194,9 @@ document.getElementById("photoForm").addEventListener("submit", async event => {
     formData.append("folder", `/galeri/${category}`);
     formData.append("customMetadata", JSON.stringify({
       category: category,
-      Name: name,
-      Age: age,
-      Note: note
+      Name: Name,
+      Age: Age,
+      Note: Note
     }));
 
     storageMessage.textContent = "Mengunggah foto ke ImageKit...";
