@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Galeri pribadi untuk koleksi Waifu, Anime, dan Penghormatan.">
+  <title>My Anime Gallery</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">MY PERSONAL GALLERY</p>
+      <h1>My Anime Gallery</h1>
+      <p class="subtitle">Kumpulan karakter dan kenangan favoritku.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="toolbar">
+      <nav class="category-nav" aria-label="Kategori">
+        <button class="category-btn active" data-category="all">Semua</button>
+        <button class="category-btn" data-category="waifu">Waifu</button>
+        <button class="category-btn" data-category="anime">Anime</button>
+        <button class="category-btn" data-category="penghormatan">Penghormatan</button>
+      </nav>
+      <button id="addPhotoBtn" class="add-photo-btn">＋ Tambah Foto</button>
+    </div>
+
+    <section id="gallery" class="gallery"></section>
+    <p id="emptyState" class="empty-state hidden">Belum ada foto pada kategori ini.</p>
+  </main>
+
+  <div id="photoModal" class="modal hidden" role="dialog" aria-modal="true">
+    <button id="closeModal" class="modal-close" aria-label="Tutup">&times;</button>
+    <div class="modal-content">
+      <img id="modalImage" src="" alt="">
+      <div class="modal-info">
+        <span id="modalCategory" class="badge"></span>
+        <h2 id="modalName"></h2>
+        <p><strong>Umur:</strong> <span id="modalAge"></span></p>
+        <p id="modalNote"></p>
+        <button id="deletePhotoBtn" class="delete-btn">Hapus Foto</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="addModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="form-card">
+      <button id="closeAddModal" class="modal-close" aria-label="Tutup">&times;</button>
+
+      <span class="badge">GALERI</span>
+      <h2>Tambah Foto</h2>
+      <p class="form-desc">Pilih foto dan isi informasi sebelum mengunggah.</p>
+
+      <form id="photoForm">
+        <label class="upload-box" for="photoFile">
+          <span class="upload-title">Pilih Foto</span>
+          <span id="fileName" class="upload-name">Belum ada file dipilih</span>
+          <input id="photoFile" type="file" accept="image/*" required>
+        </label>
+
+        <div class="form-grid">
+          <label>
+            Kategori
+            <select id="category" required>
+              <option value="waifu">Waifu</option>
+              <option value="anime">Anime</option>
+              <option value="penghormatan">Penghormatan</option>
+            </select>
+          </label>
+
+          <label>
+            Nama
+            <input id="name" type="text" maxlength="120" placeholder="Nama karakter / orang" required>
+          </label>
+
+          <label>
+            Umur
+            <input id="age" type="text" maxlength="40" placeholder="Contoh: 17 tahun">
+          </label>
+
+          <label class="full">
+            Catatan
+            <textarea id="note" rows="4" maxlength="1000" placeholder="Tulis keterangan tentang foto..."></textarea>
+          </label>
+
+          <label class="full">
+            Password Admin
+            <input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Password admin">
+          </label>
+        </div>
+
+        <div id="previewWrap" class="preview-wrap hidden">
+          <img id="preview" alt="Pratinjau foto">
+        </div>
+
+        <p id="storageMessage" class="storage-message">
+          Foto akan disimpan online di ImageKit.
+        </p>
+
+        <div class="form-actions">
+          <button type="button" id="cancelAdd" class="secondary-btn">Batal</button>
+          <button type="submit" class="primary-btn">Upload Foto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer><p>by Arga</p></footer>
+  <script src="script.js"></script>
+</body>
+</html>
