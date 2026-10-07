@@ -9,7 +9,8 @@ function json(data, status = 200) {
 }
 
 function isAuthorized(request, env) {
-  const expectedPassword = env.GALLERY_ADMIN_PASSWORD;
+  const expectedPassword =
+    env.GALLERY_ADMIN_PASSWORD;
 
   if (!expectedPassword) {
     return false;
@@ -22,10 +23,10 @@ function isAuthorized(request, env) {
     return false;
   }
 
-  const suppliedPassword =
-    authorization.slice(7);
-
-  return suppliedPassword === expectedPassword;
+  return (
+    authorization.slice(7) ===
+    expectedPassword
+  );
 }
 
 function imageKitAuthHeader(privateKey) {
@@ -37,10 +38,13 @@ export default {
     const url = new URL(request.url);
 
     // ==================================================
-    // API: UPLOAD AUTH
+    // IMAGEKIT UPLOAD AUTH
     // ==================================================
 
-    if (url.pathname === "/api/upload-auth") {
+    if (
+      url.pathname ===
+      "/api/upload-auth"
+    ) {
       if (request.method !== "GET") {
         return new Response(
           "Method Not Allowed",
@@ -51,7 +55,8 @@ export default {
       if (!isAuthorized(request, env)) {
         return json(
           {
-            error: "Password admin salah."
+            error:
+              "Password admin salah."
           },
           401
         );
@@ -126,10 +131,13 @@ export default {
     }
 
     // ==================================================
-    // API: AMBIL FOTO
+    // AMBIL DAFTAR FOTO
     // ==================================================
 
-    if (url.pathname === "/api/photos") {
+    if (
+      url.pathname ===
+      "/api/photos"
+    ) {
       if (request.method !== "GET") {
         return new Response(
           "Method Not Allowed",
@@ -233,33 +241,15 @@ export default {
             let category =
               metadata.category || "";
 
-            // ImageKit:
-            // Waifu
-            // Anime
-            // Penghormatan
-            //
-            // Website:
-            // waifu
-            // anime
-            // penghormatan
-
             if (
-              category ===
-              "Waifu"
+              category === "Waifu"
             ) {
-              category =
-                "waifu";
-            }
-
-            if (
-              category ===
-              "Anime"
+              category = "waifu";
+            } else if (
+              category === "Anime"
             ) {
-              category =
-                "anime";
-            }
-
-            if (
+              category = "anime";
+            } else if (
               category ===
               "Penghormatan"
             ) {
@@ -267,8 +257,6 @@ export default {
                 "penghormatan";
             }
 
-            // Kalau metadata category
-            // tidak ada, baca dari folder.
             if (!category) {
               const pathParts =
                 file.filePath
@@ -279,16 +267,26 @@ export default {
                 "anime";
             }
 
- const imageUrl =
-  `https://ik.imagekit.io/starganzz${file.filePath}`;
+            // Gambar sekarang lewat Worker.
+            const imageUrl =
+              `${url.origin}/api/image?path=` +
+              encodeURIComponent(
+                file.filePath
+              );
 
-return {
-  id: file.fileId,
-  image: imageUrl,
-  category: category,
-  name: metadata.Name || file.name,
-  age: metadata.Age || "-",
-  note: metadata.Note || ""
+            return {
+              id: file.fileId,
+              image: imageUrl,
+              category: category,
+              name:
+                metadata.Name ||
+                file.name,
+              age:
+                metadata.Age ||
+                "-",
+              note:
+                metadata.Note ||
+                ""
             };
           });
 
@@ -296,11 +294,105 @@ return {
     }
 
     // ==================================================
-    // API: HAPUS FOTO
+    // PROXY GAMBAR IMAGEKIT
     // ==================================================
 
-    if (url.pathname === "/api/delete") {
-      if (request.method !== "DELETE") {
+    if (
+      url.pathname ===
+      "/api/image"
+    ) {
+      if (request.method !== "GET") {
+        return new Response(
+          "Method Not Allowed",
+          { status: 405 }
+        );
+      }
+
+      const path =
+        url.searchParams.get(
+          "path"
+        );
+
+      if (!path) {
+        return new Response(
+          "Path gambar tidak ada.",
+          { status: 400 }
+        );
+      }
+
+      // Hanya izinkan file dari folder
+      // /galeri di ImageKit.
+      if (
+        !path.startsWith(
+          "/galeri/"
+        )
+      ) {
+        return new Response(
+          "Path tidak diizinkan.",
+          { status: 403 }
+        );
+      }
+
+      const imageUrl =
+        `https://ik.imagekit.io/starganzz${path}`;
+
+      const imageResponse =
+        await fetch(
+          imageUrl,
+          {
+            method: "GET",
+            headers: {
+              Accept:
+                "image/avif,image/webp,image/jpeg,image/png,image/*"
+            },
+            cf: {
+              cacheTtl: 86400,
+              cacheEverything: true
+            }
+          }
+        );
+
+      if (!imageResponse.ok) {
+        return new Response(
+          "Gambar tidak ditemukan.",
+          {
+            status:
+              imageResponse.status
+          }
+        );
+      }
+
+      const headers =
+        new Headers(
+          imageResponse.headers
+        );
+
+      headers.set(
+        "Cache-Control",
+        "public, max-age=86400"
+      );
+
+      return new Response(
+        imageResponse.body,
+        {
+          status:
+            imageResponse.status,
+          headers
+        }
+      );
+    }
+
+    // ==================================================
+    // HAPUS FOTO
+    // ==================================================
+
+    if (
+      url.pathname ===
+      "/api/delete"
+    ) {
+      if (
+        request.method !== "DELETE"
+      ) {
         return new Response(
           "Method Not Allowed",
           { status: 405 }
