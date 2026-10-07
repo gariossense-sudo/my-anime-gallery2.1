@@ -163,23 +163,18 @@ async function getPhotos() {
 // ======================================================
 
 async function renderGallery() {
-  if (!gallery) {
-    return;
-  }
+  if (!gallery) return;
 
   gallery.innerHTML = "";
 
   try {
-    const allPhotos =
-      await getPhotos();
+    const allPhotos = await getPhotos();
 
     const photos =
       activeCategory === "all"
         ? allPhotos
         : allPhotos.filter(
-            photo =>
-              photo.category ===
-              activeCategory
+            photo => photo.category === activeCategory
           );
 
     if (emptyState) {
@@ -194,55 +189,68 @@ async function renderGallery() {
         emptyState.textContent =
           "Belum ada foto pada kategori ini.";
       }
-
       return;
     }
 
     photos.forEach(item => {
-      const card =
-        document.createElement("article");
-
+      const card = document.createElement("article");
       card.className = "card";
 
-      card.innerHTML = `
-        <img
-          class="card-image"
-          src="${escapeHtml(item.image)}"
-          alt="${escapeHtml(item.name)}"
-          loading="lazy"
-        >
+      // ==============================
+      // GAMBAR
+      // ==============================
+      const img = document.createElement("img");
 
-        <div class="card-body">
+      img.className = "card-image";
+      img.src = item.image;
+      img.alt = item.name || "Foto";
+      img.loading = "lazy";
 
-          <span class="badge">
-            ${escapeHtml(
-              labels[item.category] ||
-              item.category ||
-              "Anime"
-            )}
-          </span>
+      // Kalau URL gambar gagal dimuat
+      img.onerror = () => {
+        console.error(
+          "Gambar gagal dimuat:",
+          item.image
+        );
 
-          <h2 class="card-name">
-            ${escapeHtml(
-              item.name || "Tanpa Nama"
-            )}
-          </h2>
+        img.alt = "Gambar gagal dimuat";
+      };
 
-          <p class="card-meta">
-            Umur:
-            ${escapeHtml(
-              item.age || "-"
-            )}
-          </p>
+      // ==============================
+      // INFORMASI
+      // ==============================
+      const body = document.createElement("div");
+      body.className = "card-body";
 
-          <p class="card-note">
-            ${escapeHtml(
-              item.note || ""
-            )}
-          </p>
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent =
+        labels[item.category] ||
+        item.category ||
+        "Anime";
 
-        </div>
-      `;
+      const name = document.createElement("h2");
+      name.className = "card-name";
+      name.textContent =
+        item.name || "Tanpa Nama";
+
+      const age = document.createElement("p");
+      age.className = "card-meta";
+      age.textContent =
+        `Umur: ${item.age || "-"}`;
+
+      const note = document.createElement("p");
+      note.className = "card-note";
+      note.textContent =
+        item.note || "";
+
+      body.appendChild(badge);
+      body.appendChild(name);
+      body.appendChild(age);
+      body.appendChild(note);
+
+      card.appendChild(img);
+      card.appendChild(body);
 
       card.addEventListener(
         "click",
