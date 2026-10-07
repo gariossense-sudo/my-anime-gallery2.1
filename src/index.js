@@ -279,27 +279,16 @@ export default {
                 "anime";
             }
 
-            return {
-              id:
-                file.fileId,
+ const imageUrl =
+  `https://ik.imagekit.io/starganzz${file.filePath}`;
 
-              image:
-                file.url,
-
-              category:
-                category,
-
-              name:
-                metadata.Name ||
-                file.name,
-
-              age:
-                metadata.Age ||
-                "-",
-
-              note:
-                metadata.Note ||
-                ""
+return {
+  id: file.fileId,
+  image: imageUrl,
+  category: category,
+  name: metadata.Name || file.name,
+  age: metadata.Age || "-",
+  note: metadata.Note || ""
             };
           });
 
